@@ -6,6 +6,5 @@
   "regions": ["iad1"],
   "git": {
     "silent": true
-  },
-  "root": "myclinic-emr"
+  }
 }
