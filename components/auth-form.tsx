@@ -23,18 +23,41 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     setLoading(true)
 
     try {
-      const { error } = isSignUp
-        ? await authClient.signUp.email({ email, password, name, data: { role } })
-        : await authClient.signIn.email({ email, password })
+      if (isSignUp) {
+        const { data, error } = await authClient.signUp.email({ 
+          email, 
+          password, 
+          name, 
+          data: { role } 
+        })
+        
+        if (error) {
+          setError(error.message || 'Sign up failed')
+          return
+        }
+      } else {
+        const { data, error } = await authClient.signIn.email({ 
+          email, 
+          password 
+        })
 
-      if (error) {
-        setError(error.message)
-        return
+        if (error) {
+          setError(error.message || 'Invalid email or password')
+          return
+        }
+
+        if (!data) {
+          setError('Login failed - no session data returned')
+          return
+        }
       }
 
+      // Wait a bit for session to be set, then redirect
+      await new Promise(resolve => setTimeout(resolve, 500))
       router.push('/')
       router.refresh()
     } catch (err) {
+      console.log('[v0] Auth error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
