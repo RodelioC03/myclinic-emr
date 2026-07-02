@@ -1,0 +1,236 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// User model - supports ADMIN, DOCTOR, and PATIENT roles
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String?
+  password  String   // bcrypt hashed
+  name      String
+  role      Role     @default(PATIENT)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Role-specific relations
+  doctorProfile  DoctorProfile?
+  patientProfile PatientProfile?
+
+  // Sessions
+  sessions Session[]
+
+  @@map("users")
+}
+
+enum Role {
+  ADMIN
+  DOCTOR
+  PATIENT
+}
+
+// Doctor-specific profile
+model DoctorProfile {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  license     String? // Medical license number
+  specialty   String? // e.g., "General Practice", "Cardiology"
+  experience  Int? // Years of experience
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  appointments Appointment[]
+  encounters   Encounter[]
+  prescriptions Prescription[]
+
+  @@map("doctor_profiles")
+}
+
+// Patient-specific profile
+model PatientProfile {
+  id            String   @id @default(cuid())
+  userId        String   @unique
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  // Demographics
+  dateOfBirth   DateTime
+  sex           String? // "M" | "F" | "Other"
+  civilStatus   String? // "Single", "Married", "Divorced", etc.
+  contact       String?
+  address       String?
+  occupation    String?
+
+  // Clinical profile - kept concise
+  allergies     String? // Free text, e.g., "Penicillin, shrimp"
+  pmh           String? // Past Medical History - free text
+  psh           String? // Past Surgical History - free text
+  familyHistory String? // Free text
+  smoking       String? // "None" | "Former" | "Current"
+  alcohol       String? // "None" | "Occasional" | "Regular"
+  vaccination   String? // Free text, e.g., "COVID x3, Flu 2026"
+
+  // Body metrics
+  weight        Float? // kg
+  height        Float? // cm
+  bmi           Float? // auto-calculated
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  // Relations
+  appointments  Appointment[]
+  encounters    Encounter[]
+  prescriptions Prescription[]
+  labTests      LabTest[]
+  certificates  Certificate[]
+
+  @@map("patient_profiles")
+}
+
+// Appointment (request/schedule/completed flow)
+model Appointment {
+  id            String   @id @default(cuid())
+  patientId     String
+  patient       PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId      String?
+  doctor        DoctorProfile? @relation(fields: [doctorId], references: [id])
+  
+  scheduledAt   DateTime? // Actual appointment time
+  requestedAt   DateTime @default(now())
+  reason        String? // Free text
+  status        AppointmentStatus @default(PENDING)
+  notes         String?
+
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@map("appointments")
+}
+
+enum AppointmentStatus {
+  PENDING      // Patient requested, awaiting doctor approval
+  APPROVED     // Doctor approved
+  SCHEDULED    // Confirmed appointment time
+  COMPLETED    // Encounter created
+  CANCELLED
+}
+
+// Encounter (SOAP note)
+model Encounter {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String
+  doctor      DoctorProfile  @relation(fields: [doctorId], references: [id])
+
+  encounteredAt DateTime @default(now())
+
+  // SOAP
+  chiefComplaint String?
+  subjective     String? // Free text
+  objective      String? // Free text
+  assessment     String? // Free text - includes diagnosis
+  plan           String? // Free text
+
+  // Vitals (optional)
+  bp             String? // e.g., "120/80"
+  hr             Int?
+  rr             Int?
+  temp           Float?
+  spo2           Int?
+  weight         Float?
+
+  // Relations
+  prescriptions  Prescription[]
+  labTests       LabTest[]
+  certificates   Certificate[]
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@map("encounters")
+}
+
+// Prescription
+model Prescription {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctorId    String
+  doctor      DoctorProfile  @relation(fields: [doctorId], references: [id])
+  encounterId String
+  encounter   Encounter      @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  // Drug info
+  drug        String // Drug name
+  dose        String // e.g., "500mg"
+  frequency   String // e.g., "q6h PRN"
+  duration    String? // e.g., "5 days"
+  sig         String? // Special instructions
+  quantity    Int?
+
+  issuedAt    DateTime @default(now())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("prescriptions")
+}
+
+// Lab Test
+model LabTest {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounterId String?
+  encounter   Encounter?     @relation(fields: [encounterId], references: [id], onDelete: SetNull)
+
+  testName    String // e.g., "CBC", "Lipid", "HbA1c"
+  values      String // JSON or free text with test results
+  // e.g., "WBC: 7.5 (4.5-11), Hgb: 13.2 (13-17)"
+
+  testedAt    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("lab_tests")
+}
+
+// Medical Certificate
+model Certificate {
+  id          String   @id @default(cuid())
+  patientId   String
+  patient     PatientProfile @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  encounterId String
+  encounter   Encounter      @relation(fields: [encounterId], references: [id], onDelete: Cascade)
+
+  diagnosis   String
+  recommendation String // e.g., "Fit to rest for 2 days"
+  issuedAt    DateTime @default(now())
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("certificates")
+}
+
+// Session for JWT/auth
+model Session {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token     String   @unique // JWT token
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("sessions")
+}
