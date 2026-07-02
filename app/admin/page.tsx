@@ -10,16 +10,22 @@ export const metadata = {
 }
 
 export default async function AdminPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  try {
+    const session = await auth.api.getSession({ headers: await headers() })
 
-  // Redirect if not authenticated
-  if (!session?.user) {
+    // Redirect if not authenticated
+    if (!session?.user) {
+      redirect('/sign-in')
+    }
+
+    // Redirect if not admin
+    if (session.user.role !== 'admin') {
+      redirect('/')
+    }
+  } catch (error) {
+    // Session check failed, redirect to sign-in
+    console.log('[v0] Session check failed, redirecting to sign-in')
     redirect('/sign-in')
-  }
-
-  // Redirect if not admin
-  if (session.user.role !== 'admin') {
-    redirect('/')
   }
 
   return (

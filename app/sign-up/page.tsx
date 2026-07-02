@@ -9,17 +9,22 @@ export const metadata = {
 }
 
 export default async function SignUpPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
+  try {
+    const session = await auth.api.getSession({ headers: await headers() })
 
-  if (session?.user) {
-    // Redirect logged-in users based on their role
-    if (session.user.role === 'doctor') {
-      redirect('/doctor')
-    } else if (session.user.role === 'admin') {
-      redirect('/admin')
-    } else {
-      redirect('/patient')
+    if (session?.user) {
+      // Redirect logged-in users based on their role
+      if (session.user.role === 'doctor') {
+        redirect('/doctor')
+      } else if (session.user.role === 'admin') {
+        redirect('/admin')
+      } else {
+        redirect('/patient')
+      }
     }
+  } catch (error) {
+    // Session check failed, continue to sign-up form
+    console.log('[v0] Session check failed, showing sign-up form')
   }
 
   return <AuthForm mode="sign-up" />
