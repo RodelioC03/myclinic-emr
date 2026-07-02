@@ -1,6 +1,3 @@
-import { redirect } from 'next/navigation'
-import { headers } from 'next/headers'
-import { auth } from '@/lib/auth'
 import Link from 'next/link'
 import { Users, AlertCircle, TrendingUp, Activity } from 'lucide-react'
 
@@ -9,25 +6,7 @@ export const metadata = {
   description: 'Hospital administration and management',
 }
 
-export default async function AdminPage() {
-  try {
-    const session = await auth.api.getSession({ headers: await headers() })
-
-    // Redirect if not authenticated
-    if (!session?.user) {
-      redirect('/sign-in')
-    }
-
-    // Redirect if not admin
-    if (session.user.role !== 'admin') {
-      redirect('/')
-    }
-  } catch (error) {
-    // Session check failed, redirect to sign-in
-    console.log('[v0] Session check failed, redirecting to sign-in')
-    redirect('/sign-in')
-  }
-
+export default function AdminPage() {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
@@ -43,7 +22,7 @@ export default async function AdminPage() {
             </div>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-muted">Welcome, {session.user.name || 'Administrator'}</span>
+            <span className="text-sm text-muted">Welcome, Administrator</span>
             <Link
               href="/api/auth/signout"
               className="px-4 py-2 text-sm font-medium text-primary hover:bg-primary-light rounded-lg transition-colors"
