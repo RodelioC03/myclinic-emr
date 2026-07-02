@@ -23,23 +23,18 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
     setLoading(true)
 
     try {
-      console.log('[v0] Submitting', { isSignUp, email, password: '***', name, role })
       const { error } = isSignUp
         ? await authClient.signUp.email({ email, password, name, data: { role } })
         : await authClient.signIn.email({ email, password })
 
-      console.log('[v0] Auth response:', { error })
       if (error) {
-        console.log('[v0] Auth error:', error.message)
         setError(error.message)
         return
       }
 
-      console.log('[v0] Auth successful, redirecting...')
       router.push('/')
       router.refresh()
     } catch (err) {
-      console.log('[v0] Catch error:', err)
       setError(err instanceof Error ? err.message : 'An error occurred')
     } finally {
       setLoading(false)
