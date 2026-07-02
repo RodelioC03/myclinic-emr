@@ -1,5 +1,3 @@
-import Link from 'next/link'
-
 export const dynamic = 'force-dynamic'
 
 export default function Home() {
@@ -28,51 +26,7 @@ export default function Home() {
             Modern Electronic Medical Records System for seamless healthcare management
           </p>
 
-          {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-            <Link
-              href="/sign-up"
-              className="px-8 py-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-all font-semibold shadow-sm hover:shadow-md"
-            >
-              Create Account
-            </Link>
-          </div>
 
-          {/* Account Types */}
-          <div className="mt-16 pt-12 border-t border-line">
-            <p className="text-sm font-semibold text-muted mb-6 uppercase tracking-wide">Choose your account type</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Doctor Card */}
-              <div className="p-8 bg-panel rounded-xl border border-line hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="text-4xl mb-4">👨‍⚕️</div>
-                <h3 className="text-xl font-bold text-foreground mb-2">For Doctors</h3>
-                <p className="text-muted mb-4">
-                  Manage patient records, schedule appointments, and track medical consultations efficiently
-                </p>
-                <ul className="text-sm text-muted space-y-2">
-                  <li>✓ Patient Management</li>
-                  <li>✓ Medical Records</li>
-                  <li>✓ Appointment Scheduling</li>
-                  <li>✓ Consultation Tracking</li>
-                </ul>
-              </div>
-
-              {/* Patient Card */}
-              <div className="p-8 bg-panel rounded-xl border border-line hover:border-primary/30 hover:shadow-lg transition-all">
-                <div className="text-4xl mb-4">👤</div>
-                <h3 className="text-xl font-bold text-foreground mb-2">For Patients</h3>
-                <p className="text-muted mb-4">
-                  Access your health information, book appointments, and view medical records securely
-                </p>
-                <ul className="text-sm text-muted space-y-2">
-                  <li>✓ View Health Info</li>
-                  <li>✓ Book Appointments</li>
-                  <li>✓ Medical Records</li>
-                  <li>✓ Doctor Directory</li>
-                </ul>
-              </div>
-            </div>
-          </div>
 
           {/* Features */}
           <div className="mt-16 pt-12 border-t border-line">
