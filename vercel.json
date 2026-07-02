@@ -1,6 +1,7 @@
 {
-  "buildCommand": "next build",
-  "devCommand": "next dev",
+  "buildCommand": "cd myclinic-emr && next build",
+  "devCommand": "cd myclinic-emr && next dev",
+  "installCommand": "cd myclinic-emr && npm install",
   "framework": "nextjs",
   "regions": ["iad1"],
   "git": {
