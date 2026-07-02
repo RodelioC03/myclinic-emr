@@ -13,7 +13,7 @@ const getBaseUrl = () => {
   if (process.env.V0_RUNTIME_URL) {
     return process.env.V0_RUNTIME_URL
   }
-  return 'http://localhost:3001'
+  return 'http://localhost:5000'
 }
 
 const baseUrl = getBaseUrl()
@@ -31,7 +31,7 @@ export const auth = betterAuth({
   secret: process.env.BETTER_AUTH_SECRET,
   trustedOrigins: [
     baseUrl,
-    'http://localhost:3001',
+    'http://localhost:5000',
     `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`,
     `https://${process.env.VERCEL_URL}`,
     process.env.V0_RUNTIME_URL,
