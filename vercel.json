@@ -1,0 +1,9 @@
+{
+  "buildCommand": "next build",
+  "devCommand": "next dev",
+  "framework": "nextjs",
+  "regions": ["iad1"],
+  "git": {
+    "silent": true
+  }
+}
