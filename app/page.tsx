@@ -31,14 +31,8 @@ export default function Home() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
             <Link
-              href="/sign-in"
-              className="px-8 py-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-all font-semibold shadow-sm hover:shadow-md"
-            >
-              Sign In
-            </Link>
-            <Link
               href="/sign-up"
-              className="px-8 py-4 border border-primary text-primary rounded-lg hover:bg-primary-light transition-all font-semibold"
+              className="px-8 py-4 bg-primary text-white rounded-lg hover:bg-primary-dark transition-all font-semibold shadow-sm hover:shadow-md"
             >
               Create Account
             </Link>
