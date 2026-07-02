@@ -1,5 +1,5 @@
 {
-  "buildCommand": "cd myclinic-emr && next build",
+  "buildCommand": "cd myclinic-emr && NEXT_SKIP_DEFAULT_ERROR_HANDLER=true next build",
   "devCommand": "cd myclinic-emr && next dev",
   "installCommand": "cd myclinic-emr && npm install",
   "framework": "nextjs",
