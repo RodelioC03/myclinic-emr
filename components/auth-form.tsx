@@ -11,7 +11,7 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  const [role, setRole] = useState<'doctor' | 'patient'>('patient')
+  const [role, setRole] = useState<'doctor' | 'patient' | 'admin'>('patient')
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
@@ -95,11 +95,12 @@ export function AuthForm({ mode }: { mode: 'sign-in' | 'sign-up' }) {
                   <select
                     id="role"
                     value={role}
-                    onChange={(e) => setRole(e.target.value as 'doctor' | 'patient')}
+                    onChange={(e) => setRole(e.target.value as 'doctor' | 'patient' | 'admin')}
                     className="w-full px-4 py-2 border border-line rounded-lg bg-panel text-foreground focus:outline-none focus:ring-2 focus:ring-primary font-medium transition-all"
                   >
                     <option value="patient">Patient</option>
                     <option value="doctor">Doctor / Healthcare Professional</option>
+                    <option value="admin">Administrator</option>
                   </select>
                 </div>
               </>
